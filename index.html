@@ -4,68 +4,125 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>O Rosto da Álgebra</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <h1>O Rosto da Álgebra: Desvendando o Reconhecimento Facial</h1>
+        <div class="header-content">
+            <h1>O Rosto da Álgebra</h1>
+            <p class="subtitle">Desvendando o Reconhecimento Facial com Matrizes e Vetores</p>
+        </div>
     </header>
 
     <main>
-        <section id="step-1">
-            <h2>Passo 1: A Imagem como Matriz e Vetor</h2>
-            <p>Toda imagem em tons de cinza é uma matriz de números. Para a Álgebra Linear, "desenrolamos" essa matriz em um vetor gigante. Faça o upload de um rosto para começar!</p>
-            <input type="file" id="upload-input" accept="image/*">
-            <div class="canvas-container">
-                <canvas id="user-canvas"></canvas>
-                <p>Seu rosto como imagem</p>
+        <!-- Passo 1: Upload e Matriz (sem alterações) -->
+        <div class="card">
+            <h2>Passo 1: A Imagem como uma Matriz de Pixels</h2>
+            <p>Toda imagem digital é, no fundo, uma grade de números. Para começar, envie uma foto de rosto. Depois, <strong>passe o mouse sobre a imagem</strong> para ver os valores dos pixels que a compõem, como se fosse uma matriz!</p>
+            <button class="btn-link" data-modal-id="matrix_explainer">Quer entender melhor como isso funciona?</button>
+            <div class="upload-area">
+                <button id="upload-button" class="btn">Escolher Imagem</button>
+                <input type="file" id="upload-input" accept="image/*" hidden>
+                <span id="file-name">Nenhum arquivo selecionado</span>
             </div>
-        </section>
+            
+            <div id="step-1-visualization" class="visualization-area hidden">
+                <div class="canvas-container">
+                    <canvas id="user-canvas"></canvas>
+                    <p class="canvas-caption">Seu Rosto (Passe o mouse)</p>
+                </div>
+                <div id="matrix-inspector">
+                    <p>Valores dos Pixels (Matriz)</p>
+                    <div id="matrix-grid"></div>
+                </div>
+            </div>
+        </div>
 
-        <section id="step-2" class="hidden">
-            <h2>Passo 2: O "Rosto Médio" e os Eigenfaces</h2>
-            <p>Calculamos um "Rosto Médio" a partir de nosso banco de dados. Depois, encontramos os "Eigenfaces" (Autovetores), que são os "rostos-base" que capturam as principais variações faciais.</p>
-            <div class="gallery">
-                <div class="canvas-container">
-                    <canvas id="mean-face-canvas"></canvas>
-                    <p>Rosto Médio</p>
-                </div>
-                <div class="canvas-container">
-                    <canvas id="eigenface-canvas"></canvas>
-                    <p>Um dos Eigenfaces</p>
-                </div>
-            </div>
-        </section>
-        
-        <section id="step-3" class="hidden">
-            <h2>Passo 3: A "Receita" do Rosto (Transformação Linear)</h2>
-            <p>Seu rosto é projetado no "espaço dos Eigenfaces". O resultado é uma "receita" (um vetor de pesos) que o descreve de forma única e compacta. Com essa receita, podemos reconstruir uma aproximação do seu rosto.</p>
-            <div class="gallery">
-                <div class="canvas-container">
-                    <canvas id="reconstruction-canvas"></canvas>
-                    <p>Seu Rosto Reconstruído</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="step-4" class="hidden">
-            <h2>Passo 4: O Reconhecimento (Comparando Receitas)</h2>
-            <p>Comparamos a "receita" do seu rosto com as receitas de todos os rostos no nosso banco de dados. O rosto com a receita mais parecida (menor distância Euclidiana) é o "match"!</p>
-            <div id="results-container">
-                <h3>Resultado do Reconhecimento:</h3>
-                <div class="gallery">
-                    <div class="canvas-container">
-                        <img id="match-image" src="" alt="Rosto correspondente">
-                        <p id="match-label">Pessoa Encontrada</p>
+        <!-- Área que só aparece após o upload -->
+        <div id="results-area" class="hidden">
+            
+            <!-- NOVO PASSO 2: De Matriz para Vetor -->
+            <div class="card">
+                <h2>Passo 2: De Matriz para Vetor e a Ideia dos Eigenfaces</h2>
+                <p>Para que a Álgebra Linear funcione, transformamos a matriz da imagem (2D) em um único e longo <strong>vetor</strong> (1D). Imagine "desenrolar" as linhas da matriz uma após a outra. Cada rosto se torna um ponto em um espaço de milhares de dimensões!</p>
+                <button class="btn-link" data-modal-id="vector_explainer">O que significa "um ponto no espaço dimensional"?</button>
+                <!-- ÁREA DA VISUALIZAÇÃO MODIFICADA -->
+                <div class="visualization-area">
+                    <div id="vector-animation-container">
+                        <div id="vector-animation-grid">
+                            <!-- Células da animação serão geradas por JS -->
+                        </div>
                     </div>
                 </div>
-                <p id="match-distance"></p>
+                <!-- BOTÃO DE CONTROLE ADICIONADO -->
+                <div style="text-align: center; margin-top: 1rem;">
+                    <button id="toggle-animation-btn" class="btn">Transformar em Vetor</button>
+                </div>
+
+                <p class="explanation-text">Com todos os rostos do nosso banco de dados representados como vetores, o algoritmo de <strong>Análise de Componentes Principais (PCA)</strong> encontra as "direções" de maior variação entre eles. Essas direções, quando visualizadas, são os <strong>Eigenfaces</strong>: os "ingredientes" fundamentais dos rostos.</p>
             </div>
-        </section>
+
+            <!-- Passo 3 (antigo 2): O Rosto Médio e os Eigenfaces -->
+            <div class="card">
+                <h2>Passo 3: Visualizando o "Rosto Médio" e os Eigenfaces</h2>
+                <p>O PCA nos dá duas coisas: um "Rosto Médio" e os "Eigenfaces" — os rostos-fantasma que representam as principais características que variam entre as pessoas. Eles são a base para descrever qualquer rosto.</p>
+                <div class="visualization-area">
+                    <div class="canvas-container">
+                        <canvas id="mean-face-canvas"></canvas>
+                        <p class="canvas-caption">Rosto Médio</p>
+                    </div>
+                    <div class="canvas-container">
+                        <canvas id="eigenface-canvas"></canvas>
+                        <p class="canvas-caption">Eigenface Principal</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Passo 4 (antigo 3): A Receita e a Reconstrução -->
+            <div class="card">
+                <h2>Passo 4: A "Receita" e a Reconstrução (Transformação Linear)</h2>
+                <p>Seu rosto é descrito como uma combinação dos Eigenfaces. Essa "receita" de pesos é sua assinatura facial. Com ela, podemos reconstruir uma aproximação do seu rosto.</p>
+                <div class="visualization-area">
+                    <div class="canvas-container">
+                        <canvas id="reconstruction-canvas"></canvas>
+                        <p class="canvas-caption">Seu Rosto Reconstruído</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Passo 5 (antigo 4): O Reconhecimento -->
+            <div class="card result-card">
+                <h2>Passo 5: O Reconhecimento!</h2>
+                <p>Comparamos a "receita" do seu rosto com as do nosso banco de dados. A mais próxima é o resultado!</p>
+                <div id="results-container" class="visualization-area">
+                     <div class="canvas-container">
+                        <img id="match-image" src="" alt="Rosto correspondente">
+                        <p id="match-label" class="canvas-caption">Pessoa Encontrada!</p>
+                    </div>
+                    <div class="match-info">
+                        <p id="match-distance"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- MOLDE DO MODAL DE EXPLICAÇÃO -->
+    <div id="modal-overlay" class="modal-hidden">
+        <div class="modal-card">
+            <button id="modal-close-btn" class="modal-close-btn">×</button>
+            <h3 id="modal-title"></h3>
+            <div id="modal-content">
+                <p></p>
+            </div>
+        </div>
+    </div>
     </main>
+    
 
     <footer>
-        <p>Trabalho de Matemática para Ciências da Computação.</p>
+        <p>Projeto de Matemática para Ciências da Computação</p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/mathjs@11.8.0/lib/browser/math.min.js"></script>

@@ -1,0 +1,309 @@
+/* --- Reset e Configurações Globais --- */
+:root {
+    --primary-color: #0d47a1; /* Azul escuro */
+    --secondary-color: #1976d2; /* Azul médio */
+    --accent-color: #42a5f5; /* Azul claro */
+    --background-color: #f5f7fa;
+    --card-background: #ffffff;
+    --text-color: #333333;
+    --light-text-color: #ffffff;
+    --border-color: #e0e0e0;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+/* --- Cabeçalho --- */
+header {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: var(--light-text-color);
+    padding: 2.5rem 1rem;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.header-content h1 {
+    margin: 0;
+    font-size: 2.8rem;
+    font-weight: 700;
+}
+
+.subtitle {
+    margin: 0.5rem 0 0;
+    font-size: 1.2rem;
+    font-weight: 300;
+    opacity: 0.9;
+}
+
+/* --- ESTILOS PARA OS MODAIS DE EXPLICAÇÃO --- */
+
+/* O botão que abre o modal */
+.btn-link {
+    background: none;
+    border: none;
+    color: var(--secondary-color);
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 5px 0;
+    font-size: 0.95rem;
+    display: block;
+    margin: 10px 0;
+}
+.btn-link:hover {
+    color: var(--primary-color);
+}
+
+/* O fundo escuro (overlay) */
+#modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+#modal-overlay:not(.modal-hidden) {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* O card de conteúdo do modal */
+.modal-card {
+    background: var(--card-background);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    max-width: 650px;
+    width: 90%;
+    position: relative;
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+}
+
+#modal-overlay:not(.modal-hidden) .modal-card {
+    transform: scale(1);
+}
+
+#modal-title {
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+#modal-content p {
+    line-height: 1.7;
+    margin-bottom: 1rem;
+}
+
+/* O botão de fechar (o 'X') */
+.modal-close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 2.5rem;
+    line-height: 1;
+    color: #aaa;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.modal-close-btn:hover {
+    color: #333;
+}
+
+/* --- ESTILOS PARA A ANIMAÇÃO MATRIZ -> VETOR (VERSÃO COM CONTROLE) --- */
+#vector-animation-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+    padding: 1rem 0;
+}
+
+/* Estado inicial e transição */
+#vector-animation-grid {
+    display: grid;
+    /* Estado padrão: Matriz 8x8 */
+    grid-template-columns: repeat(8, 20px);
+    gap: 3px;
+    /* A transição que fará a animação suavemente */
+    transition: all 1.5s ease-in-out;
+}
+
+/* Estado "Vetor" - aplicado quando a classe 'is-vector' está presente */
+#vector-animation-grid.is-vector {
+    grid-template-columns: repeat(1, 20px);
+    gap: 1px;
+}
+
+.anim-cell {
+    width: 20px;
+    height: 20px;
+    background-color: #ccc;
+    border-radius: 2px;
+}
+
+.explanation-text {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background-color: #f5f7fa;
+    border-left: 4px solid var(--accent-color);
+    line-height: 1.7;
+}
+
+/* --- Conteúdo Principal e Cards --- */
+main {
+    padding: 2rem 1rem;
+    max-width: 900px;
+    margin: auto;
+}
+
+.card {
+    background: var(--card-background);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    border: 1px solid var(--border-color);
+}
+
+h2 {
+    color: var(--primary-color);
+    margin-top: 0;
+    border-bottom: 2px solid var(--accent-color);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+/* --- Área de Upload --- */
+.upload-area {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    margin-top: 1rem;
+}
+
+.btn {
+    background-color: var(--secondary-color);
+    color: var(--light-text-color);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: var(--primary-color);
+}
+
+/* --- Área de Visualização --- */
+.visualization-area {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 2rem;
+    margin-top: 1.5rem;
+}
+
+.canvas-container {
+    text-align: center;
+}
+
+.canvas-caption {
+    margin-top: 0.5rem;
+    font-style: italic;
+    color: #666;
+}
+
+/* --- Estilos para Canvas e Imagens (IMPORTANTE) --- */
+canvas, #match-image {
+    border: 2px solid var(--border-color);
+    background-color: #fafafa;
+    /* Aumenta o tamanho da imagem exibida */
+    width: 184px;  /* 2x a largura original (92px) */
+    height: 224px; /* 2x a altura original (112px) */
+    /* Mantém os pixels nítidos quando ampliados */
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-crisp-edges;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+.hidden {
+    display: none;
+}
+
+/* --- Visualizador de Matriz Interativo --- */
+#matrix-inspector {
+    padding: 1rem;
+    background: #f0f0f0;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    font-family: 'Courier New', monospace;
+    text-align: center;
+    min-width: 180px;
+}
+#matrix-inspector p {
+    margin: 0 0 10px 0;
+    font-family: 'Roboto', sans-serif;
+    font-style: italic;
+}
+#matrix-grid {
+    display: grid;
+    /* Será preenchido por JS */
+    gap: 2px;
+}
+.matrix-cell {
+    width: 25px;
+    height: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.8rem;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+}
+
+/* --- Resultados --- */
+.result-card {
+    background-color: #e3f2fd; /* Fundo azul claro para destaque */
+    border-color: var(--accent-color);
+}
+.match-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 1rem;
+    font-size: 1.1rem;
+}
+
+/* --- Rodapé --- */
+footer {
+    text-align: center;
+    padding: 1.5rem;
+    font-size: 0.9rem;
+    color: #777;
+}
+
