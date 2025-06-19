@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O Rosto da Álgebra</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>O Rosto da Álgebra: Desvendando o Reconhecimento Facial</h1>
+    </header>
+
+    <main>
+        <section id="step-1">
+            <h2>Passo 1: A Imagem como Matriz e Vetor</h2>
+            <p>Toda imagem em tons de cinza é uma matriz de números. Para a Álgebra Linear, "desenrolamos" essa matriz em um vetor gigante. Faça o upload de um rosto para começar!</p>
+            <input type="file" id="upload-input" accept="image/*">
+            <div class="canvas-container">
+                <canvas id="user-canvas"></canvas>
+                <p>Seu rosto como imagem</p>
+            </div>
+        </section>
+
+        <section id="step-2" class="hidden">
+            <h2>Passo 2: O "Rosto Médio" e os Eigenfaces</h2>
+            <p>Calculamos um "Rosto Médio" a partir de nosso banco de dados. Depois, encontramos os "Eigenfaces" (Autovetores), que são os "rostos-base" que capturam as principais variações faciais.</p>
+            <div class="gallery">
+                <div class="canvas-container">
+                    <canvas id="mean-face-canvas"></canvas>
+                    <p>Rosto Médio</p>
+                </div>
+                <div class="canvas-container">
+                    <canvas id="eigenface-canvas"></canvas>
+                    <p>Um dos Eigenfaces</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="step-3" class="hidden">
+            <h2>Passo 3: A "Receita" do Rosto (Transformação Linear)</h2>
+            <p>Seu rosto é projetado no "espaço dos Eigenfaces". O resultado é uma "receita" (um vetor de pesos) que o descreve de forma única e compacta. Com essa receita, podemos reconstruir uma aproximação do seu rosto.</p>
+            <div class="gallery">
+                <div class="canvas-container">
+                    <canvas id="reconstruction-canvas"></canvas>
+                    <p>Seu Rosto Reconstruído</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="step-4" class="hidden">
+            <h2>Passo 4: O Reconhecimento (Comparando Receitas)</h2>
+            <p>Comparamos a "receita" do seu rosto com as receitas de todos os rostos no nosso banco de dados. O rosto com a receita mais parecida (menor distância Euclidiana) é o "match"!</p>
+            <div id="results-container">
+                <h3>Resultado do Reconhecimento:</h3>
+                <div class="gallery">
+                    <div class="canvas-container">
+                        <img id="match-image" src="" alt="Rosto correspondente">
+                        <p id="match-label">Pessoa Encontrada</p>
+                    </div>
+                </div>
+                <p id="match-distance"></p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Trabalho de Matemática para Ciências da Computação.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/mathjs@11.8.0/lib/browser/math.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
