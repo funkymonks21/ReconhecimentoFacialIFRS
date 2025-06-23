@@ -18,17 +18,15 @@
     </header>
 
     <main>
-        <!-- Passo 1: Upload e Matriz (sem alterações) -->
         <div class="card">
             <h2>Passo 1: A Imagem como uma Matriz de Pixels</h2>
-            <p>Toda imagem digital é, no fundo, uma grade de números. Para começar, envie uma foto de rosto. Depois, <strong>passe o mouse sobre a imagem</strong> para ver os valores dos pixels que a compõem, como se fosse uma matriz!</p>
+            <p>Toda imagem digital é uma grade de números. Envie uma foto de rosto e passe o mouse sobre ela para ver os valores dos pixels que a compõem.</p>
             <button class="btn-link" data-modal-id="matrix_explainer">Quer entender melhor como isso funciona?</button>
             <div class="upload-area">
                 <button id="upload-button" class="btn">Escolher Imagem</button>
-                <input type="file" id="upload-input" accept="image/*" hidden>
+                <input type="file" id="upload-input" accept="image/jpeg, image/png" hidden>
                 <span id="file-name">Nenhum arquivo selecionado</span>
             </div>
-            
             <div id="step-1-visualization" class="visualization-area hidden">
                 <div class="canvas-container">
                     <canvas id="user-canvas"></canvas>
@@ -41,50 +39,78 @@
             </div>
         </div>
 
-        <!-- Área que só aparece após o upload -->
         <div id="results-area" class="hidden">
-            
-            <!-- NOVO PASSO 2: De Matriz para Vetor -->
             <div class="card">
-                <h2>Passo 2: De Matriz para Vetor e a Ideia dos Eigenfaces</h2>
-                <p>Para que a Álgebra Linear funcione, transformamos a matriz da imagem (2D) em um único e longo <strong>vetor</strong> (1D). Imagine "desenrolar" as linhas da matriz uma após a outra. Cada rosto se torna um ponto em um espaço de milhares de dimensões!</p>
+                <h2>Passo 2: De Matriz para Vetor</h2>
+                <p>Para a Álgebra Linear, "desenrolamos" a matriz da imagem em um único e longo vetor. Cada rosto se torna um ponto em um espaço de milhares de dimensões!</p>
                 <button class="btn-link" data-modal-id="vector_explainer">O que significa "um ponto no espaço dimensional"?</button>
-                <!-- ÁREA DA VISUALIZAÇÃO MODIFICADA -->
                 <div class="visualization-area">
                     <div id="vector-animation-container">
-                        <div id="vector-animation-grid">
-                            <!-- Células da animação serão geradas por JS -->
-                        </div>
+                        <div id="vector-animation-grid"></div>
                     </div>
                 </div>
-                <!-- BOTÃO DE CONTROLE ADICIONADO -->
                 <div style="text-align: center; margin-top: 1rem;">
                     <button id="toggle-animation-btn" class="btn">Transformar em Vetor</button>
                 </div>
-
-                <p class="explanation-text">Com todos os rostos do nosso banco de dados representados como vetores, o algoritmo de <strong>Análise de Componentes Principais (PCA)</strong> encontra as "direções" de maior variação entre eles. Essas direções, quando visualizadas, são os <strong>Eigenfaces</strong>: os "ingredientes" fundamentais dos rostos.</p>
             </div>
 
-            <!-- Passo 3 (antigo 2): O Rosto Médio e os Eigenfaces -->
             <div class="card">
-                <h2>Passo 3: Visualizando o "Rosto Médio" e os Eigenfaces</h2>
-                <p>O PCA nos dá duas coisas: um "Rosto Médio" e os "Eigenfaces" — os rostos-fantasma que representam as principais características que variam entre as pessoas. Eles são a base para descrever qualquer rosto.</p>
-                <div class="visualization-area">
-                    <div class="canvas-container">
-                        <canvas id="mean-face-canvas"></canvas>
-                        <p class="canvas-caption">Rosto Médio</p>
-                    </div>
-                    <div class="canvas-container">
-                        <canvas id="eigenface-canvas"></canvas>
-                        <p class="canvas-caption">Eigenface Principal</p>
-                    </div>
-                </div>
+    <h2>Passo 3: Matemática do PCA - Dos Dados aos Eigenfaces</h2>
+    
+    <!-- Construção da Matriz de Dados -->
+    <div class="step-container">
+        <h3>1. Construção da Matriz de Dados</h3>
+        <p>Cada rosto no banco de dados é representado como um vetor coluna na matriz X:</p>
+        <div class="math-formula">X = [v₁, v₂, ..., vₘ]</div>
+        <div class="controls">
+            <button id="showFacesBtn" class="btn">Mostrar Rostos do Banco</button>
+        </div>
+        <div id="facesGrid" class="faces-grid"></div>
+    </div>
+    
+    <!-- Cálculo do Rosto Médio -->
+    <div class="step-container">
+        <h3>2. Cálculo do Rosto Médio (ψ)</h3>
+        <p>O rosto médio ψ é calculado como a média de todos os vetores:</p>
+        <div class="math-formula">ψ = (1/m) Σ vᵢ</div>
+        <div class="controls">
+            <button id="calculateMeanBtn" class="btn" disabled>Calcular Rosto Médio</button>
+        </div>
+        <div class="visualization-area">
+            <div class="face-container">
+                <canvas id="meanFaceCanvas" class="face-canvas"></canvas>
+                <div class="face-label">Rosto Médio (ψ)</div>
             </div>
-            
-            <!-- Passo 4 (antigo 3): A Receita e a Reconstrução -->
+            <div id="meanMatrixPreview" class="matrix-preview"></div>
+        </div>
+    </div>
+    
+    <!-- Centralização dos Dados -->
+    <div class="step-container">
+        <h3>3. Centralização dos Dados</h3>
+        <p>Subtraímos o rosto médio para obter as diferenças Φᵢ:</p>
+        <div class="math-formula">Φᵢ = vᵢ - ψ</div>
+        <div class="controls">
+            <button id="centerDataBtn" class="btn" disabled>Centralizar Dados</button>
+        </div>
+        <div id="centeredFacesGrid" class="faces-grid"></div>
+    </div>
+    
+    <!-- Explicação -->
+    <div class="explanation">
+        <h3>Próximos Passos:</h3>
+        <p>Com os dados centralizados, podemos calcular:</p>
+        <ul>
+            <li>Matriz de covariância C = (1/m) ΦΦᵀ</li>
+            <li>Autovetores (Eigenfaces) de C</li>
+            <li>Projeção nos componentes principais</li>
+        </ul>
+    </div>
+</div>
+
             <div class="card">
-                <h2>Passo 4: A "Receita" e a Reconstrução (Transformação Linear)</h2>
-                <p>Seu rosto é descrito como uma combinação dos Eigenfaces. Essa "receita" de pesos é sua assinatura facial. Com ela, podemos reconstruir uma aproximação do seu rosto.</p>
+                <h2>Passo 4: A "Receita" e a Reconstrução</h2>
+                <p>Seu rosto é descrito como uma combinação dos Eigenfaces. Essa "receita" de pesos é sua assinatura facial, usada para reconstruir uma aproximação.</p>
                 <div class="visualization-area">
                     <div class="canvas-container">
                         <canvas id="reconstruction-canvas"></canvas>
@@ -93,7 +119,6 @@
                 </div>
             </div>
 
-            <!-- Passo 5 (antigo 4): O Reconhecimento -->
             <div class="card result-card">
                 <h2>Passo 5: O Reconhecimento!</h2>
                 <p>Comparamos a "receita" do seu rosto com as do nosso banco de dados. A mais próxima é o resultado!</p>
@@ -108,19 +133,16 @@
                 </div>
             </div>
         </div>
-        <!-- MOLDE DO MODAL DE EXPLICAÇÃO -->
+    </main>
+
     <div id="modal-overlay" class="modal-hidden">
         <div class="modal-card">
             <button id="modal-close-btn" class="modal-close-btn">×</button>
             <h3 id="modal-title"></h3>
-            <div id="modal-content">
-                <p></p>
-            </div>
+            <div id="modal-content"></div>
         </div>
     </div>
-    </main>
     
-
     <footer>
         <p>Projeto de Matemática para Ciências da Computação</p>
     </footer>
