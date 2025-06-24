@@ -109,31 +109,79 @@
 </div>
 
             <div class="card">
-                <h2>Passo 4: A "Receita" e a Reconstrução</h2>
-                <p>Seu rosto é descrito como uma combinação dos Eigenfaces. Essa "receita" de pesos é sua assinatura facial, usada para reconstruir uma aproximação.</p>
-                <div class="visualization-area">
-                    <div class="canvas-container">
-                        <canvas id="reconstruction-canvas"></canvas>
-                        <p class="canvas-caption">Seu Rosto Reconstruído</p>
-                    </div>
-                </div>
-            </div>
+    <h2>Passo 4: Covariância e Autovetores</h2>
+    <p>Com os rostos "centralizados", como o computador encontra os eixos de maior variação, os Eigenfaces?</p>
+    
+    <!-- Sub-seção da Matriz de Covariância -->
+    <div class="step-container">
+        <h3>A. A Matriz de Covariância (C)</h3>
+        <p>Primeiro, construímos uma <strong>Matriz de Covariância</strong>. Essa matriz especial nos diz como as dimensões (pixels) variam em conjunto. Um valor alto na matriz significa que, quando o pixel 'i' fica mais claro, o pixel 'j' também tende a ficar mais claro.</p>
+        <div class="math-formula">C = A * Aᵀ</div>
+        <p class="canvas-caption">(Onde A é a matriz com as diferenças de rosto Φᵢ como colunas)</p>
+        <button class="btn-link" data-modal-id="covariance_explainer">Explique a intuição da Covariância</button>
+    </div>
 
-            <div class="card result-card">
-                <h2>Passo 5: O Reconhecimento!</h2>
-                <p>Comparamos a "receita" do seu rosto com as do nosso banco de dados. A mais próxima é o resultado!</p>
-                <div id="results-container" class="visualization-area">
-                     <div class="canvas-container">
-                        <img id="match-image" src="" alt="Rosto correspondente">
-                        <p id="match-label" class="canvas-caption">Pessoa Encontrada!</p>
-                    </div>
-                    <div class="match-info">
-                        <p id="match-distance"></p>
-                    </div>
-                </div>
-            </div>
+    <!-- IMAGEM CENTRAL ADICIONADA AQUI -->
+    <div class="central-image-container">
+        <img src="assets/pca_visual.gif" alt="Animação visual do PCA, mostrando a nuvem de pontos, a matriz de covariância e os autovetores como eixos principais.">
+        <p class="canvas-caption">Visualização do processo: A partir dos dados, a covariância revela a estrutura (elipse), e os autovetores apontam para os eixos dessa estrutura.</p>
+    </div>
+
+    <!-- Sub-seção dos Autovetores -->
+    <div class="step-container">
+        <h3>B. Autovetores e Autovalores</h3>
+        <p>Os <strong>Autovetores</strong> (Eigenvectors) desta matriz de covariância são vetores especiais. Eles apontam para as direções de máxima variação nos dados. Quando remodelamos esses vetores de volta para o formato de uma imagem, obtemos os <strong>Eigenfaces!</strong></p>
+        <p>Cada autovetor tem um <strong>Autovalor</strong> (Eigenvalue) correspondente, um número que nos diz a "importância" ou "quantidade de variação" que aquele eixo (Eigenface) representa. Ordenamos os Eigenfaces do maior para o menor autovalor.</p>
+        <button class="btn-link" data-modal-id="eigen_explainer">O que é um Autovetor, visualmente?</button>
+    </div>
+</div>
+
+            <!-- NOVO PASSO 5: A Receita e a Reconstrução Interativa -->
+<div class="card">
+    <h2>Passo 5: A "Receita" e a Reconstrução Interativa</h2>
+    <p>Agora que temos os <strong>pesos</strong> (a "receita" única do seu rosto) e os <strong>Eigenfaces</strong> (os "ingredientes"), podemos reconstruir uma aproximação do seu rosto. A fórmula é:</p>
+    <div class="math-formula">Rosto ≈ Rosto Médio + (peso₁ * Eigenface₁) + ...</div>
+    <p>Use o slider abaixo para ver como a qualidade da reconstrução melhora à medida que adicionamos mais Eigenfaces (ingredientes) na receita!</p>
+
+    <!-- Área Interativa da Reconstrução -->
+    <div class="reconstruction-container">
+        <!-- Imagem Original para Comparação -->
+        <div class="canvas-container">
+            <canvas id="original-for-comparison-canvas"></canvas>
+            <p class="canvas-caption">Seu Rosto Original</p>
         </div>
-    </main>
+        <!-- Imagem Reconstruída -->
+        <div class="canvas-container">
+            <canvas id="reconstruction-canvas"></canvas>
+            <p class="canvas-caption">Rosto Reconstruído</p>
+        </div>
+    </div>
+
+    <!-- Slider de Controle -->
+    <div class="slider-container">
+        <label for="eigenface-slider">Número de Eigenfaces usados: <strong id="slider-value">1</strong></label>
+        <input type="range" id="eigenface-slider" min="1" max="20" value="1" step="1" class="slider">
+    </div>
+</div>
+
+<!-- PASSO 6: O Reconhecimento Final -->
+<div class="card result-card">
+    <h2>Passo 6: O Reconhecimento!</h2>
+    <p>Finalmente, comparamos a "receita" completa do seu rosto com as receitas de todos os rostos no nosso banco de dados. O rosto com a receita mais parecida (menor distância Euclidiana) é o resultado!</p>
+    
+    <div id="results-container" class="visualization-area">
+         <!-- O JS vai colocar a imagem correspondente aqui -->
+         <div class="canvas-container">
+            <img id="match-image" src="" alt="Rosto correspondente">
+            <p id="match-label" class="canvas-caption">Pessoa Encontrada!</p>
+        </div>
+
+        <!-- O JS vai colocar a pontuação de similaridade aqui -->
+        <div class="match-info">
+            <p id="match-distance"></p>
+        </div>
+    </div>
+</div>
 
     <div id="modal-overlay" class="modal-hidden">
         <div class="modal-card">

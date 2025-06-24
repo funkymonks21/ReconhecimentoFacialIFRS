@@ -9,6 +9,24 @@ document.addEventListener('DOMContentLoaded', () => {
             title: 'Um Ponto no Espaço Dimensional',
             content: `<p>Essa é uma das ideias mais poderosas da Álgebra Linear aplicada! Vamos por partes:</p><p>Para localizar um ponto em um gráfico 2D, você precisa de um vetor com 2 coordenadas: <code>[x, y]</code>.</p><p>Para um ponto em um espaço 3D, você precisa de um vetor com 3 coordenadas: <code>[x, y, z]</code>.</p><p>O padrão é claro: <strong>o número de coordenadas em um vetor define o número de dimensões do espaço.</strong></p><p>Nossa imagem de rosto, após ser "desenrolada" em um vetor, tem <strong>10.304</strong> valores (92 x 112). Isso significa que cada rosto é um único ponto em um espaço abstrato de <strong>10.304 dimensões</strong>! Nós não conseguimos visualizar isso, mas o computador pode calcular coisas nesse espaço, como a <strong>distância</strong> entre dois pontos-rosto para ver o quão parecidos eles são.</p>`
         },
+        'covariance_explainer': {
+            title: 'A Intuição da Matriz de Covariância',
+            content: `<p>Imagine que você tem dados de altura e peso de várias pessoas. Você notaria que, em geral, pessoas mais altas tendem a ser mais pesadas. A <strong>covariância</strong> é um número que mede exatamente essa tendência de duas variáveis "andarem juntas".</p>
+                      <ul>
+                        <li><strong>Covariância positiva:</strong> Quando uma sobe, a outra também tende a subir (ex: altura e peso).</li>
+                        <li><strong>Covariância negativa:</strong> Quando uma sobe, a outra tende a descer (ex: horas de estudo vs. horas de videogame).</li>
+                        <li><strong>Covariância perto de zero:</strong> Não há uma tendência clara entre as duas.</li>
+                      </ul>
+                      <p>A <strong>Matriz de Covariância</strong> faz isso para todas as combinações de pixels. A entrada na linha 'i' e coluna 'j' da matriz nos diz como o pixel 'i' covaria com o pixel 'j' em todo o nosso banco de dados de rostos. É um mapa completo das relações entre todos os pixels.</p>`
+        },
+        'eigen_explainer': {
+            title: 'O que é um Autovetor (Eigenvector)?',
+            content: `<p>Imagine que uma matriz é uma "transformação" que estica, encolhe ou rotaciona o espaço. Por exemplo, ela pode pegar todos os vetores de um círculo e transformá-los em uma elipse.</p>
+                      <p>Dentro dessa transformação, quase todos os vetores mudam de direção. No entanto, existem alguns vetores especiais que <strong>não mudam sua direção original</strong>, eles apenas são "esticados" ou "encolhidos".</p>
+                      <p>Esses vetores que mantêm sua direção são os <strong>Autovetores</strong> da matriz.</p>
+                      <p>O fator pelo qual eles são esticados ou encolhidos é o <strong>Autovalor</strong> correspondente. Um autovalor grande significa que aquela direção é muito "esticada" pela transformação, ou seja, é uma direção de grande importância ou variação.</p>
+                      <p>No PCA, os autovetores da matriz de covariância apontam para as direções de maior "esticamento" dos dados, que são exatamente as direções de maior variação que queremos encontrar!</p>`
+        }
     };
     
     // --- LÓGICA DO MODAL (Sem alterações) ---
@@ -39,6 +57,9 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('keydown', (event) => { if (event.key === 'Escape' && !modalOverlay.classList.contains('modal-hidden')) closeModal(); });
 
     // --- REFERÊNCIAS GERAIS ---
+    const originalForComparisonCanvas = document.getElementById('original-for-comparison-canvas');
+    const eigenfaceSlider = document.getElementById('eigenface-slider');
+    const sliderValue = document.getElementById('slider-value');
     let recognitionData = null;
     let userImageVector = null;
     const uploadButton = document.getElementById('upload-button');
@@ -285,24 +306,61 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function runRecognition(userVector) {
-        const centeredUserVector = math.subtract(userVector, recognitionData.mean_face);
-        const userWeights = math.multiply(centeredUserVector, math.transpose(recognitionData.eigenfaces));
-        const reconstruction = math.add(math.multiply(userWeights, recognitionData.eigenfaces), recognitionData.mean_face);
-        drawVectorToCanvas(reconstruction, reconstructionCanvas);
-        let bestMatchIndex = -1, minDistance = Infinity;
-        recognitionData.weights.forEach((dbWeights, index) => {
-            const distance = math.distance(userWeights, dbWeights);
-            if (distance < minDistance) {
-                minDistance = distance;
-                bestMatchIndex = index;
-            }
-        });
-        const matchedFilepath = recognitionData.filepaths[bestMatchIndex];
-        const matchedLabel = recognitionData.labels[bestMatchIndex];
-        matchImage.src = `database_png/${matchedFilepath}`;
-        matchLabel.textContent = `Identificado como: Sujeito ${matchedLabel.replace('s', '')}`;
-        matchDistance.textContent = `Pontuação (Distância): ${minDistance.toFixed(2)} (menor é melhor)`;
-    }
+    // Desenha a imagem original do usuário no novo canvas para comparação
+    drawVectorToCanvas(userVector, originalForComparisonCanvas);
+
+    // Calcula os pesos (a "receita") do rosto do usuário
+    const centeredUserVector = math.subtract(userVector, recognitionData.mean_face);
+    const userWeights = math.multiply(centeredUserVector, math.transpose(recognitionData.eigenfaces));
+
+    // --- LÓGICA DO SLIDER ---
+    // Define o valor máximo do slider com base no número de eigenfaces disponíveis
+    eigenfaceSlider.max = recognitionData.eigenfaces.length;
+    // Reseta o slider para o valor inicial
+    eigenfaceSlider.value = recognitionData.eigenfaces.length; 
+    sliderValue.textContent = eigenfaceSlider.value;
+
+    // Função que será chamada sempre que o slider mudar
+    const updateReconstruction = () => {
+        const numComponents = parseInt(eigenfaceSlider.value, 10);
+        sliderValue.textContent = numComponents;
+
+        // Pega apenas os primeiros 'numComponents' pesos e eigenfaces
+        const weightsToUse = userWeights.slice(0, numComponents);
+        const eigenfacesToUse = recognitionData.eigenfaces.slice(0, numComponents);
+        
+        // Reconstrói a imagem usando apenas os componentes selecionados
+        const partialReconstruction = math.add(
+            math.multiply(weightsToUse, eigenfacesToUse),
+            recognitionData.mean_face
+        );
+        drawVectorToCanvas(partialReconstruction, reconstructionCanvas);
+    };
+
+    // Adiciona o event listener ao slider
+    // Usamos 'input' para que a atualização seja em tempo real enquanto arrasta
+    eigenfaceSlider.oninput = updateReconstruction;
+
+    // Chama a função uma vez para a reconstrução inicial (com todos os componentes)
+    updateReconstruction();
+
+    // --- LÓGICA DE RECONHECIMENTO (MATCH) ---
+    // Esta parte continua a mesma, comparando a "receita completa"
+    let bestMatchIndex = -1, minDistance = Infinity;
+    recognitionData.weights.forEach((dbWeights, index) => {
+        // Compara a receita completa do usuário com as do banco de dados
+        const distance = math.distance(userWeights, dbWeights);
+        if (distance < minDistance) {
+            minDistance = distance;
+            bestMatchIndex = index;
+        }
+    });
+    const matchedFilepath = recognitionData.filepaths[bestMatchIndex];
+    const matchedLabel = recognitionData.labels[bestMatchIndex];
+    matchImage.src = `database_png/${matchedFilepath}`;
+    matchLabel.textContent = `Identificado como: Sujeito ${matchedLabel.replace('s', '')}`;
+    matchDistance.textContent = `Pontuação (Distância): ${minDistance.toFixed(2)} (menor é melhor)`;
+}
 
     // Inicia o processo carregando os dados
     loadRecognitionData();

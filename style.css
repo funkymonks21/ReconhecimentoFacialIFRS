@@ -110,6 +110,22 @@ canvas, #match-image { border: 2px solid var(--border-color); background-color: 
     padding-left: 20px;
 }
 
+.central-image-container {
+    text-align: center;
+    margin: 2rem 0;
+    padding: 1rem;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+.central-image-container img {
+    max-width: 100%;
+    height: auto;
+    max-height: 400px; /* Evita que o GIF seja grande demais */
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+}
+
 /* --- Resultado e Modal --- */
 .result-card { background-color: #e3f2fd; border-color: var(--accent-color); }
 .match-info { display: flex; align-items: center; justify-content: center; padding-left: 1rem; font-size: 1.1rem; }
@@ -122,3 +138,60 @@ canvas, #match-image { border: 2px solid var(--border-color); background-color: 
 .modal-close-btn { position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 2.5rem; line-height: 1; color: #aaa; cursor: pointer; transition: color 0.2s; }
 .modal-close-btn:hover { color: #333; }
 footer { text-align: center; padding: 1.5rem; font-size: 0.9rem; color: #777; }
+
+/* --- ESTILOS PARA A SEÇÃO 5 INTERATIVA --- */
+.reconstruction-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    margin: 1.5rem 0;
+}
+
+.slider-container {
+    margin-top: 1rem;
+    text-align: center;
+    padding: 1rem;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+.slider-container label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.slider {
+    -webkit-appearance: none;
+    width: 80%;
+    height: 15px;
+    background: #ddd;
+    outline: none;
+    opacity: 0.7;
+    transition: opacity .2s;
+    border-radius: 5px;
+}
+
+.slider:hover {
+    opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    background: var(--primary-color);
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+.slider::-moz-range-thumb {
+    width: 25px;
+    height: 25px;
+    background: var(--primary-color);
+    cursor: pointer;
+    border-radius: 50%;
+}
