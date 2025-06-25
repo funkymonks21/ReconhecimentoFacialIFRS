@@ -1,158 +1,108 @@
-# Documentação do Projeto: "O Rosto da Álgebra"
-
-**Curso:** Análise e Desenvolvimento de Sistemas  
-**Disciplina:** Matemática para Computação 2  
-**Professor:** Gabriel Goldmeier  
-**Autores:** Cristian Lidorio, Giordano Debenedetti
-
-## 1. Introdução
-
-Este projeto demonstra o funcionamento de um sistema de reconhecimento facial utilizando o algoritmo **Eigenfaces**, que é uma aplicação direta da técnica de **Análise de Componentes Principais (PCA)**, um pilar da Álgebra Linear e da Estatística.
-
-O sistema é dividido em duas partes principais:
-
-1.  **Script de Treinamento (Backend - `train.py`):** Um script em Python que processa um banco de dados de imagens de rostos, aprende as características faciais mais importantes (os "Eigenfaces") e salva esse conhecimento em um arquivo de dados (`recognition_data.json`).
-2.  **Interface Web Interativa (Frontend - `index.html`, `style.css`, `script.js`):** Uma página web que carrega os dados treinados e permite ao usuário fazer o upload de uma foto. A interface então guia o usuário, passo a passo e de forma visual, por todo o processo matemático do reconhecimento.
-
-## 2. Arquitetura Geral
-
-O fluxo de dados do projeto funciona da seguinte maneira:
-
-1.  O script `train.py` é executado **uma vez** (*offline*). Ele lê as imagens do banco de dados (`database`), realiza os cálculos de PCA e gera o arquivo `recognition_data.json`.
-2.  Este arquivo `recognition_data.json` atua como nosso "modelo treinado". Ele contém toda a informação necessária para o sistema reconhecer novos rostos.
-3.  O usuário abre o `index.html` em um navegador.
-4.  O `script.js` da página web carrega o `recognition_data.json`.
-5.  Quando o usuário envia uma nova imagem, o `script.js` realiza os mesmos cálculos matemáticos (projeção) no lado do cliente (no navegador) para encontrar o rosto mais parecido no banco de dados original.
-
----
-
-## 3. Parte 1: O Script de Treinamento (`train.py`)
-
-Este script é responsável por analisar o banco de dados de imagens e extrair as características essenciais para o reconhecimento.
-
-### Objetivo
-
-O objetivo principal é transformar um conjunto de imagens de rostos em uma base de conhecimento compacta e eficiente, que consiste em:
-*   O "rosto médio" de todo o banco de dados.
-*   Os "Eigenfaces", que são os componentes que representam as maiores variações entre os rostos.
-*   Os "pesos" de cada imagem do banco, que representam como cada rosto pode ser reconstruído a partir dos Eigenfaces.
-
-### Bibliotecas Utilizadas
-
-*   **`numpy`**: Fundamental para operações matemáticas com matrizes e vetores de forma eficiente.
-*   **`scikit-learn (sklearn.decomposition.PCA)`**: Fornece uma implementação otimizada e robusta do algoritmo de Análise de Componentes Principais (PCA).
-*   **`Pillow (PIL)`**: Usada para ler, manipular e salvar arquivos de imagem.
-*   **`os`**, **`json`**, **`shutil`**: Para manipulação de arquivos e pastas, e para salvar a estrutura de dados final em formato JSON.
-
-### Passo a Passo do Código
-
-#### **Configurações Iniciais**
-```python
-# --- Configurações ---
-DATABASE_PATH_PGM = 'database'
-DATABASE_PATH_PNG = 'database_png' # Nova pasta para as imagens web-friendly
-IMAGE_WIDTH = 92
-IMAGE_HEIGHT = 112
-NUM_COMPONENTS = 20
+Documentação: Projeto "O Rosto da Álgebra"
+Autores: Cristian Lidorio, Giordano Debenedetti
+Curso: Análise e Desenvolvimento de Sistemas
+Disciplina: Matemática para Computação 2
+Professor: Gabriel Goldmeier
+1. Visão Geral do Projeto
+O projeto "O Rosto da Álgebra" é uma aplicação web interativa projetada para demonstrar, de forma didática e visual, o funcionamento de um sistema de reconhecimento facial baseado no algoritmo Eigenfaces, que utiliza conceitos fundamentais de Álgebra Linear como matrizes, vetores e a Análise de Componentes Principais (PCA).
+A aplicação guia o usuário através de um processo de 6 passos, começando com o upload de uma imagem de rosto e terminando com a identificação da pessoa mais parecida em um banco de dados pré-processado.
+2. Arquitetura da Solução
+O projeto é dividido em duas partes principais:
+Script de Pré-processamento (preprocess.py): Um script em Python que prepara o banco de dados de imagens. Ele realiza a Análise de Componentes Principais (PCA) em um conjunto de imagens de treinamento, extrai as informações essenciais (Rosto Médio, Eigenfaces, Pesos) e as salva em um único arquivo JSON (recognition_data.json).
+Aplicação Web (Frontend): Uma interface de usuário construída com HTML, CSS e JavaScript. Ela carrega os dados pré-processados pelo script Python e os utiliza para guiar o usuário visualmente pelo processo de reconhecimento, aplicando as mesmas transformações matemáticas no rosto enviado pelo usuário.
+3. Estrutura de Arquivos
+Generated code
+.
+├── 📄 index.html        # Estrutura principal da página web (os 6 passos).
+├── 🎨 style.css         # Folha de estilos para a aparência visual da página.
+├── 🧠 script.js         # Lógica interativa do frontend, manipulação do DOM e cálculos.
+├── 🐍 preprocess.py     # Script Python para preparar o banco de dados e gerar o JSON.
+├── 📦 database/         # Pasta com as imagens originais em formato PGM.
+├── 🌐 database_png/     # Pasta gerada pelo script com as imagens convertidas para PNG.
+└── 📊 recognition_data.json # Arquivo gerado pelo script com os dados do modelo.
 Use code with caution.
-Markdown
-Explicação: Definimos constantes globais. DATABASE_PATH_PNG é onde salvaremos as versões PNG, compatíveis com navegadores. IMAGE_WIDTH e IMAGE_HEIGHT definem as dimensões padrão (92x112 = 10.304 pixels). NUM_COMPONENTS é um hiperparâmetro crucial: ele define quantos Eigenfaces (componentes principais) queremos usar para representar os rostos.
-Preparação da Pasta de Imagens
+4. Detalhamento dos Componentes
+4.1. Script de Pré-processamento (preprocess.py)
+Este script é o ponto de partida e a base matemática de todo o projeto. Sua função é analisar o banco de dados de rostos e extrair os "ingredientes" que o frontend usará para o reconhecimento.
+Responsabilidades:
+Configuração: Define constantes como as dimensões das imagens (IMAGE_WIDTH, IMAGE_HEIGHT) e o número de componentes principais (NUM_COMPONENTS) a serem extraídos.
+Conversão de Imagens: Lê as imagens do banco de dados no formato .pgm, converte-as para .png (um formato amigável para a web) e as salva na pasta database_png/. Isso é crucial para que o navegador possa exibi-las.
+Vetorização: Cada imagem (que é uma matriz de pixels) é "achatada" (flattened) em um único vetor longo. Todos esses vetores são empilhados para formar uma grande matriz de dados, onde cada linha representa um rosto.
+Análise de Componentes Principais (PCA): Utilizando a biblioteca scikit-learn, o PCA é aplicado à matriz de dados. Este é o passo mais importante, onde o script calcula:
+pca.mean_: O rosto médio (ψ) de todo o banco de dados.
+pca.components_: Os autovetores (Eigenvectors) da matriz de covariância dos dados. Estes são os famosos Eigenfaces.
+Cálculo de Pesos: Para cada rosto no banco de dados, o script calcula seus "pesos" correspondentes. Um peso é um coeficiente que indica "o quanto" de cada Eigenface é necessário para reconstruir aquele rosto específico. Matematicamente, é a projeção do vetor do rosto (centralizado) no espaço dos Eigenfaces.
+Serialização: Todas as informações calculadas (rosto médio, eigenfaces, pesos, caminhos dos arquivos PNG e rótulos) são salvas em um único arquivo recognition_data.json. Este arquivo atua como nosso "modelo treinado".
 Generated python
-# --- Preparar a pasta de destino para PNGs ---
-if os.path.exists(DATABASE_PATH_PNG):
-    shutil.rmtree(DATABASE_PATH_PNG)
-os.makedirs(DATABASE_PATH_PNG)
-Use code with caution.
-Python
-Explicação: Este bloco garante que, a cada execução, a pasta de imagens PNG seja limpa e recriada, evitando que arquivos antigos interfiram no processo.
-Carregamento, Vetorização e Conversão
-Generated python
-face_vectors = []
-image_filepaths_png = []
-image_labels = []
-
-for root, dirs, files in os.walk(DATABASE_PATH_PGM):
-    for filename in files:
-        if filename.endswith('.pgm'):
-            # ...
-            with Image.open(pgm_path) as img:
-                img.save(png_full_path) # 1. Salva a versão PNG
-                
-                # 2. Continua o processo de vetorização
-                face_vectors.append(np.array(img).flatten())
-                # ...
-
-faces_matrix = np.array(face_vectors)
-Use code with caution.
-Python
-Explicação: Este é o coração do pré-processamento de dados.
-Conversão para PNG: Cada imagem .pgm é salva como .png para que a interface web possa exibi-las.
-Vetorização: A imagem 2D (matriz 92x112) é transformada em um vetor 1D (array de 10.304 elementos) usando .flatten(). Este é o passo fundamental para aplicar a Álgebra Linear.
-Matriz de Dados: Todos os vetores de rosto são empilhados para formar uma única matriz (faces_matrix), onde cada linha representa um rosto.
-Cálculo do PCA
-Generated python
+# Trecho principal do preprocess.py
 pca = PCA(n_components=NUM_COMPONENTS)
+
+# O PCA é treinado na matriz de rostos vetorizados
 pca.fit(faces_matrix)
 
+# Extração dos dados calculados
 mean_face_vector = pca.mean_
 eigenfaces = pca.components_
-Use code with caution.
-Python
-Explicação: Aqui a "mágica" do PCA acontece.
-Instanciação: Criamos um objeto PCA para encontrar os 20 componentes principais mais significativos.
-Treinamento (pca.fit): Este comando analisa a faces_matrix e calcula:
-pca.mean_: O Rosto Médio, a média de todos os rostos.
-pca.components_: Os Eigenfaces, uma matriz onde cada linha é um vetor que aponta na direção de maior variação nos dados.
-Cálculo dos Pesos (Projeção)
-Generated python
+
+# Cálculo dos pesos para cada imagem do banco de dados
 projected_weights = pca.transform(faces_matrix)
-Use code with caution.
-Python
-Explicação: O método pca.transform projeta cada rosto da faces_matrix no espaço dos Eigenfaces. O resultado é uma matriz de pesos (projected_weights), onde cada linha é um conjunto de 20 números (a "receita" ou "DNA" facial) que descreve unicamente aquele rosto.
-Salvando os Resultados
-Generated python
+
+# Organização dos dados para salvar em JSON
 output_data = {
     'mean_face': mean_face_vector.tolist(),
     'eigenfaces': eigenfaces.tolist(),
     'weights': projected_weights.tolist(),
-    'filepaths': image_filepaths_png,
-    'labels': image_labels,
-    'image_size': {'width': IMAGE_WIDTH, 'height': IMAGE_HEIGHT}
+    # ... outros metadados
 }
 
 with open('recognition_data.json', 'w') as f:
     json.dump(output_data, f)
 Use code with caution.
 Python
-Explicação: Todos os resultados são convertidos para listas Python e salvos em um único arquivo JSON. Este arquivo é o "modelo treinado" que será usado pela interface web.
-4. Parte 2: A Interface Web Interativa
-A interface web é projetada para ser uma ferramenta de ensino, explicando visualmente cada etapa do algoritmo.
-index.html (A Estrutura)
-Define a estrutura semântica da página, dividida em "cards" que correspondem aos passos lógicos do algoritmo (Passo 1 a 6). Utiliza elementos <canvas> para desenho dinâmico de imagens e inclui modais para explicações teóricas.
-style.css (A Aparência)
-Responsável por toda a estilização da página. Utiliza um design moderno com "cards", um esquema de cores consistente e estilos específicos para os elementos interativos (canvases, sliders, animações) para tornar as visualizações claras e agradáveis.
-script.js (A Interatividade e a Lógica)
-Este é o cérebro da interface. Ele re-implementa a lógica de reconhecimento para uma única imagem e controla todas as visualizações.
-Fluxo Principal
-Carregamento de Dados (loadRecognitionData): Assim que a página carrega, o script usa fetch para carregar e analisar o recognition_data.json, armazenando os dados na variável global recognitionData.
-Upload de Imagem (handleFileUpload): Quando o usuário seleciona uma imagem, o script a redimensiona, converte para tons de cinza e a vetoriza, criando o userImageVector. Em seguida, chama a função runRecognition.
-Visualizações Interativas
-Passo 1 (Matriz): O evento mousemove no canvas do usuário mostra os valores numéricos dos pixels sob o cursor, demonstrando que a imagem é uma matriz de números.
-Passo 3 (Etapas do PCA): O usuário clica em botões para:
-Visualizar algumas imagens do banco de dados.
-Calcular e visualizar o Rosto Médio.
-Calcular e visualizar a diferença de cada rosto em relação ao rosto médio, mostrando os dados "centralizados" (as matrizes Φᵢ da teoria).
-Passo 5 (Reconstrução Interativa):
-O script calcula os pesos para a imagem do usuário usando a fórmula:
-pesos = (ImagemDoUsuário - RostoMédio) • Eigenfacesᵀ
-Um slider permite que o usuário controle quantos Eigenfaces (numComponents) são usados na reconstrução.
-A imagem é reconstruída em tempo real usando a fórmula:
-Rosto ≈ Rosto Médio + (peso₁ * Eigenface₁) + ... + (peso_N * Eigenface_N)
-Isso demonstra como os Eigenfaces são "blocos de construção" e como a qualidade da imagem melhora à medida que mais componentes são adicionados à "receita".
-Passo 6 (Reconhecimento Final):
-O reconhecimento compara a "receita" (o vetor de pesos do usuário) com as receitas de todos os rostos no banco de dados.
-O script calcula a distância Euclidiana entre o vetor de pesos do usuário e cada um dos vetores de peso do banco de dados.
-O rosto do banco de dados com a menor distância é considerado o "match", e seu resultado é exibido na tela.
-5. Conclusão
-Este projeto implementa com sucesso o algoritmo Eigenfaces, demonstrando a aplicação prática de conceitos de Álgebra Linear em um problema do mundo real. A abordagem de dividir o sistema em um backend de treinamento e um frontend de demonstração interativa permite não apenas construir um sistema funcional, mas também criar uma poderosa ferramenta educacional para visualizar e entender a matemática por trás do reconhecimento facial.
+4.2. Estrutura da Página (index.html)
+O arquivo HTML define a estrutura semântica da página. Ele é organizado em seções claras, cada uma contida em um <div class="card"> que representa um passo do processo.
+<header>: Contém o título do projeto.
+Passo 1: A Imagem como uma Matriz de Pixels: Área para upload da imagem e a primeira visualização, onde o usuário pode passar o mouse sobre a foto e ver os valores dos pixels em uma grade.
+Passo 2: De Matriz para Vetor: Apresenta uma animação visual que transforma uma grade (matriz) em uma coluna única (vetor).
+Passo 3: Matemática do PCA - Dos Dados aos Eigenfaces: Uma seção interativa que demonstra as etapas iniciais do PCA sobre o banco de dados: visualização dos rostos, cálculo do rosto médio e centralização dos dados (rostos - rosto médio).
+Passo 4: Covariância e Autovetores: Uma seção explicativa que usa um GIF e texto para dar a intuição por trás da matriz de covariância e do conceito de Autovetores/Autovalores.
+Passo 5: A "Receita" e a Reconstrução Interativa: Uma das partes mais importantes. Mostra o rosto original do usuário ao lado de uma reconstrução. Um slider permite que o usuário controle quantos Eigenfaces são usados na reconstrução, demonstrando visualmente como a qualidade da imagem melhora à medida que mais componentes são adicionados.
+Passo 6: O Reconhecimento!: Exibe o resultado final: a imagem do banco de dados que mais se assemelha à imagem do usuário, juntamente com a "pontuação de similaridade" (distância Euclidiana).
+Modais: O HTML também define a estrutura de janelas modais que são usadas para fornecer explicações mais detalhadas quando o usuário clica nos links "Quer entender melhor...?".
+4.3. Lógica da Aplicação (script.js)
+Este é o cérebro da aplicação web. Ele gerencia a interatividade, realiza os cálculos no lado do cliente e atualiza a interface do usuário.
+Fluxo de Execução Principal:
+Inicialização (DOMContentLoaded): Quando a página carrega, o script inicia.
+Carregamento de Dados (loadRecognitionData): A primeira ação é fazer uma requisição fetch para carregar e analisar o arquivo recognition_data.json. Todos os dados do modelo (rosto médio, eigenfaces, etc.) são armazenados em uma variável global recognitionData. Nenhuma outra ação pode ocorrer até que esses dados estejam disponíveis.
+Upload de Imagem (handleFileUpload):
+Quando o usuário seleciona um arquivo, esta função é acionada.
+Ela chama processUploadedImage, que usa um <canvas> temporário para redimensionar a imagem do usuário para o tamanho padrão (92x112) e a converte para tons de cinza.
+O resultado é um vetor de pixels (userImageVector), exatamente no mesmo formato dos vetores do banco de dados.
+Após o processamento, a função runRecognition é chamada.
+Lógica Interativa dos Passos:
+Passo 1: A função visualizeMatrixSnippet é ativada pelo evento mousemove no canvas do usuário. Ela lê a posição do mouse, encontra o valor do pixel correspondente no userImageVector e exibe uma pequena grade de valores ao redor daquele ponto.
+Passo 2: A função toggleVectorAnimation simplesmente adiciona ou remove uma classe CSS (is-vector) do contêiner da animação, e o CSS cuida da transição visual.
+Passo 3: As funções showDatabaseFaces, calculateAndDrawMeanFace, e showCenteredFaces são acionadas por cliques de botão. Elas usam os dados de recognitionData e a função drawVectorToCanvas para renderizar as imagens correspondentes nos elementos <canvas>.
+Função Central de Reconhecimento (runRecognition):
+Cálculo dos Pesos do Usuário:
+Primeiro, o vetor do usuário é centralizado: centeredUserVector = userVector - mean_face.
+Em seguida, os pesos do usuário são calculados projetando este vetor centralizado nos Eigenfaces: userWeights = centeredUserVector * eigenfacesᵀ. A biblioteca math.js é usada para essas operações de matriz/vetor.
+Reconstrução Interativa (Passo 5):
+Um listener de evento oninput é anexado ao slider.
+Toda vez que o slider é movido, a função updateReconstruction é chamada.
+Ela pega o número de componentes do slider, seleciona apenas a fatia correspondente dos userWeights e dos eigenfaces, e reconstrói o rosto: RostoReconstruido = (pesos * eigenfaces) + rostoMédio.
+O resultado é desenhado no canvas de reconstrução.
+Correspondência Final (Passo 6):
+O script itera sobre todos os vetores de pesos do banco de dados (recognitionData.weights).
+Para cada um, ele calcula a distância Euclidiana entre os pesos do usuário (userWeights) e os pesos do banco de dados (dbWeights).
+distance = math.distance(userWeights, dbWeights)
+O script mantém o controle do índice com a menor distância encontrada.
+Ao final do loop, o índice da "melhor correspondência" é usado para buscar o arquivo e o rótulo correspondentes em recognitionData e exibir o resultado final.
+4.4. Estilos (style.css)
+A folha de estilos é responsável por toda a apresentação visual do projeto, garantindo uma experiência de usuário agradável e clara.
+Variáveis CSS (:root): Define uma paleta de cores centralizada, facilitando a manutenção do tema visual.
+Layout Geral: Utiliza Flexbox e Grid para organizar os elementos na página de forma responsiva.
+Estilo dos Cards: Cria a aparência de "cartões" para cada passo, separando visualmente as etapas.
+Estilo dos Elementos Interativos: Define a aparência de botões, links, sliders e da área de upload.
+Estilos de Visualização: Estilos específicos para os elementos <canvas>, para a grade da matriz de pixels e para a animação da transformação em vetor. Uma propriedade importante aqui é image-rendering: pixelated;, que garante que as imagens de baixa resolução dos rostos não fiquem borradas pelo navegador.
+Estilo dos Modais: Controla a aparência e o comportamento das janelas pop-up de explicação, incluindo a sobreposição escura e a animação de surgimento.
